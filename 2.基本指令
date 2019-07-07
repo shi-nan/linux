@@ -1,0 +1,71 @@
+创建数据库
+ CREATE DATABASE [IF NOT EXISTS] db_name [create_specification [, create_specification]
+ 创建名为 db1 的数据库
+create database db1;
+创建一个使用utf8字符集的 db2 数据库 create database db2 charset=utf8;
+创建一个使用utf字符集，并带校对规则的 db3 数据库。
+create database db3 charset=utf8 collate utf8_general_ci;
+不区分大小写
+创建一个数据库，校验规则使用utf8_ general_ ci[不区分大小写] create database test1 collate utf8_general_ci;
+use test1;
+   create table person(name varchar(20));
+区分大小写 创建一个数据库，校验规则使用utf8_ bin[区分大小写]
+   create database test2 collate utf8_bin;
+use test2
+   create table person(name varchar(20));
+  进行查询
+查看数据库
+  
+show databases;
+
+显示创建语句
+show create database 数据库名;
+
+修改数据库
+语法:
+ ALTER DATABASE db_name
+[alter_spacification [,alter_spacification]...]
+alter_spacification:
+[DEFAULT] CHARACTER SET charset_name
+[DEFAULT] COLLATE collation_name
+
+说明:
+  对数据库的修改主要指的是修改数据库的字符集，校验规则
+实例: 将 mytest 数据库字符集改成 gbk
+ 
+  mysql> show create database mytest;
++----------+----------------------------------------------------------------+
+| Database | Create Database                                                |
++----------+----------------------------------------------------------------+
+| mysql    | CREATE DATABASE `mytest` /*!40100 DEFAULT CHARACTER SET utf8 */ |
++----------+----------------------------------------------------------------+
+      ALTER DATABASE db_name
+[alter_spacification [,alter_spacification]...]
+alter_spacification:
+[DEFAULT] CHARACTER SET charset_name
+[DEFAULT] COLLATE collation_name
+数据库删除
+  
+DROP DATABASE [IF EXISTS] db_ name;
+备份和恢复 2.4.5.1 备份
+语法:
+# mysqldump -P3306 -u root -p 密码 -B 数据库名 > 数据库备份存储的文件路径 示例:将mytest库备份到文件(退出连接)
+# mysqldump -P3306 -u root -p123456 -B mytest > ./mytest.sql
+这时，可以打开看看 mytest.sql 文件里的内容，其实把我们整个创建数据库，建表，导入数据的语句都装载这个
+文件中。 2.4.5.2 还原
+mysql> source D:/mysql-5.7.22/mytest.sql; 2.4.5.3 注意事项
+  如果备份的不是整个数据库，而是其中的一张表，怎么做?
+# mysqldump -u root -p 数据库名 表名1 表名2 > ./mytest.sql 同时备份多个数据库
+# mysqldump -u root -p -B 数据库名1 数据库名2 ... > 数据库存放路径 如果备份一个数据库时，没有带上-B参数， 在恢复数据库时，需要先创建空数据库，然后使用数据库，再使
+用source来还原。 
+查看连接情况 语法:
+   show processlist
+示例:
+ mysql> show processlist;
++----+------+-----------+------+---------+------+-------+------------------+
+| Id | User | Host      | db   | Command | Time | State | Info             |
++----+------+-----------+------+---------+------+-------+------------------+
+|  2 | root | localhost | test | Sleep   | 1386 |       | NULL             |
+|  3 | root | localhost | NULL | Query   |    0 | NULL  | show processlist |
++----+------+-----------+------+---------+------+-------+------------------+
+可以告诉我们当前有哪些用户连接到我们的MySQL，如果查出某个用户不是你正常登陆的，很有可能你的数据库被 人入侵了。以后大家发现自己数据库比较慢时，可以用这个指令来查看数据库连接情况。
