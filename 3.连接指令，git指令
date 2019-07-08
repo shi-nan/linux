@@ -1,0 +1,21 @@
+连接指令
+--mysql -u 127.0.0.1
+数据库保存为文件的指令
+--mysqldump -u root -B customer >ct.sql
+查看文件
+--cat ct.sql //存为.sql可方便导入导出
+查看所有文件
+--ls
+输出：
+ct      Desktop    Downloads  file1  file3   Music   Pictures  Templates  Videos
+ct.sql  Documents  file       file2  gitpro  mytest  Public    test.c
+创建git文件
+--mkdir git
+-- cd git
+git 三部曲
+ --git clone https://github.com/shi-nan/linux.git
+--ls
+--git add --all
+--ls
+--git commit .
+--git push
