@@ -37,3 +37,84 @@ emp.sal > tmp.asal and emp.deptno=tmp.dt;
 --显示每个部门的信息（部门名，编号，地址）和人员数量
 select deptno,count(*) as pnum from emp group by deptno;//建立临时表
 select dept.deptno, dname,loc from dept, (select deptno,count(*) as pnum from emp group by deptno) tmp where dept.deptno=tmp.deptno;
+-内连接
+--select ename,dname from emp inner join dept on emp.deptno=dept.deptno;
+-外连接
+--左外连接（保证了左表的完整性)
+select 字段名 from 表1 left join 表2 on(不可省略） 连接条件
+--右外连接（保证了右表的完整性，右表中的数据至少出现一次)
+-索引（大大增加查询的速度，但是对增删改的速度有影响）
+--表按照索引默认排序，索引会形成一棵二叉树，可以用二分查找
+-解决方法，创建索引
+-创建主键索引
+第一种方式
+-- 在创建表的时候，直接在字段名后指定 primary key 
+create table user1(id int primary key, name varchar(30));
+第二种方式：
+-- 在创建表的最后，指定某列或某几列为主键索引 create table user2(id int, name varchar(30), primary key(id));
+第三种方式：
+create table user3(id int, name varchar(30));
+-- 创建表以后再添加主键 alter table user3 add primary key(id)//alter table 表名 add index(empno);
+--如果没有索引，就需要逐条进行查询，有索引就会二分查找；
+--如果需要增删操作可删掉索引再进行操作；当我们添加一个索引，不能够解决所有查询问题，需要分别给字段建立索引；索引是以空间换时间；
+-唯一索引的创建
+第一种方式
+-- 在表定义时，在某列后直接指定unique唯一属性。 create table user4(id int primary key, name varchar(30) unique);
+第二种方式
+-- 创建表时，在表的后面指定某列或某几列为unique create table user5(id int primary key, name varchar(30), unique(name));
+第三种方式
+create table user6(id int primary key, name varchar(30)）； alter table user6 add unique(name);
+-查询索引
+--show keys from 表名
+-删除索引
+第一种方法
+-删除主键索引： alter table 表名 drop primary key;
+第二种方法
+-其他索引的删除： alter table 表名 drop index 索引名； 索引名就是show keys from 表名中的 Key_name 字段
+mysql> alter table user10 drop index idx_name;
+第三种方法方法： drop index 索引名 on 表名
+mysql> drop index name on user8;
+-全文索引的创建
+--当对文章字段或有大量文字的字段进行检索时，会使用到全文索引。MySQL提供全文索引机制，但是有要求，要求表的存储引擎必须是MyISAM，而且默认的全文索引
+支持英文，不支持中文。如果对中文进行全文检索，可以使用sphinx的中文版(coreseek)。
+CREATE TABLE articles ( id INT UNSIGNED AUTO_INCREMENT NOT NULL PRIMARY KEY, title VARCHAR(200), 
+body TEXT, FULLTEXT (title,body) )engine=MyISAM;
+-事务基本操作
+-开始一个事务
+start transaction;
+-创建一个保存点
+--savepoint 保存点名；
+-回到保存点（根据具体情况）
+--rollback to 保存点名;
+-事务操作注意事项
+--如果没有设置保存点，也可以回滚，只能回滚到事务的开始。直接使用 rollback(前提是事务还没有提交)；
+如果一个事务被提交了（commit），则不可以回退（rollback）；可以选择回退到哪个保存点；
+InnoDB支持事务，MyISAM不支持事务；InnoDB不支持全文索引，MyISAM支持全文索引；
+开始事务可以使 start transaction
+-无隔离性的问题
+脏读，不可重复读，幻读
+-设置事务的隔离级别
+--set session transaction isolation level read uncommitted;
+-查看当前的隔离级别
+--select @@tx_isolation;
+-事务的ACID特性
+--原子性(Atomicity)：
+事务是应用中最小的执行单位，就如原子是自然界的最小颗粒，具有不可再分的特征一样，事务是应用中不可再分
+的最小逻辑执行体。
+--一致性(Consistency)：
+事务执行的结果，必须使数据库从一个一致性状态，变到另一个一致性状态。当数据库只包含事务成功提交的结果
+时，数据库处于一致性状态。如果系统运行发生中断，某个事务尚未完成而被迫中断，而改未完成的事务对数据库
+所做的修改已被写入数据库，此时数据库就处于一种不正确（不一致）的状态。因此一致性是通过原子性来保证
+的。
+--隔离性(Isolation)：
+各个事务的执行互不干扰，任意一个事务的内部操作对其他并发事务都是隔离的。也就是说，并发执行的事务之间
+不能看到对方的中间状态，并发执行的事务之间不能互相影响。
+--持久性(Durability)：
+持久性是指一个事务一旦被提交，它对数据库所做的改变都要记录到永久存储其中（如：磁盘）。
+-视图
+--创建视图：create view 视图名 as select语句；
+--修改了视图，对基表数据没有影响
+update v_ename_dname set dname='sales' where ename='CLARK'; select * from EMP where ename='CLARK';
+--修改了基表，对视图有影响
+-order by 可以用在视图中，但是如果从该视图检索数据 select 中也含有 order by ,那么该视图中的order by 将被覆盖
+
